@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "open-scout"
+version = "0.1.0"
+description = "An independent, self-hosted web search engine for people and agents."
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+license = "MIT"
+dependencies = [
+  "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "pydantic-settings>=2.6,<3",
+  "beautifulsoup4>=4.12,<5", "trafilatura>=2,<3", "urllib3>=2.6,<3",
+  "numpy>=2,<3", "httpx>=0.28,<1", "mcp>=1.12,<2"
+]
+
+[project.optional-dependencies]
+neural = ["fastembed>=0.7,<1"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1", "pytest-cov>=6,<8"]
+
+[project.scripts]
+scout = "open_scout.cli:main"
+scout-mcp = "open_scout.mcp_server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/open_scout"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

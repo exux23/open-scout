@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open Scout — Your search index</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="/"
+        ><span class="mark">↗</span
+        ><span
+          >open scout<span class="edition">SELF-HOSTED SEARCH</span></span
+        ></a
+      >
+      <nav aria-label="Workspace">
+        <button class="nav active" data-view="search">
+          <span>⌕</span> Search index <kbd>/</kbd>
+        </button>
+        <button class="nav" data-view="crawl">
+          <span>↳</span> Crawl websites
+        </button>
+        <button class="nav" data-view="api">
+          <span>⌘</span> API &amp; agents
+        </button>
+      </nav>
+      <div class="index-label">
+        YOUR INDEX <span id="page-count">0 pages</span>
+      </div>
+      <button class="domain active" id="all-domains">
+        All sources <span>↗</span>
+      </button>
+      <div id="domains" class="domain-list"></div>
+      <div class="sidebar-bottom">
+        <div class="local-status">
+          <i></i><span id="connection-status">Connecting…</span>
+        </div>
+        <button id="connection-button" class="quiet">
+          Connection settings <span>⚙</span>
+        </button>
+        <span class="version">Open source · v0.1.0</span>
+      </div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <span
+          >Workspace <span class="slash">/</span>
+          <strong id="view-title">Search index</strong></span
+        ><a
+          href="https://github.com/exux23/open-scout"
+          target="_blank"
+          rel="noreferrer"
+          >GitHub ↗</a
+        >
+      </header>
+      <div id="notice" role="status" class="notice" hidden></div>
+      <section id="view-search" class="view">
+        <div class="workspace-heading">
+          <div>
+            <p class="eyebrow">EXPLORE YOUR SOURCES</p>
+            <h1>Search index</h1>
+            <p>
+              Find ideas, pages, and connections in the web you’ve collected.
+            </p>
+          </div>
+          <span class="index-badge" id="index-badge">LOCAL INDEX</span>
+        </div>
+        <form id="search-form">
+          <div class="search-box">
+            <span aria-hidden="true">⌕</span
+            ><label class="sr-only" for="query">Search query</label
+            ><input
+              id="query"
+              placeholder="What are you looking for?"
+              required
+              maxlength="2000"
+              autocomplete="off"
+            /><button type="submit" id="search-button">
+              Search <span>↗</span>
+            </button>
+          </div>
+          <div class="search-options">
+            <label
+              >Retrieval
+              <select id="mode">
+                <option value="auto">Automatic</option>
+                <option value="keyword">Keyword</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="neural">Neural</option>
+              </select></label
+            ><label
+              >Results
+              <select id="count">
+                <option>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select></label
+            ><span id="scope">All sources</span>
+          </div>
+        </form>
+        <div class="result-heading">
+          <span id="result-summary">Ready when you are</span
+          ><span id="retrieval-label">Search your own web</span>
+        </div>
+        <div id="results" aria-live="polite">
+          <div class="empty">
+            <div class="orbit" aria-hidden="true"><span>↗</span></div>
+            <h2>Your next discovery starts here.</h2>
+            <p>
+              Add a few websites to build your index.<br />Every result will
+              link back to its source.
+            </p>
+            <button class="primary" data-view="crawl">
+              Crawl your first website ↗
+            </button>
+            <div class="empty-foot">YOUR DATA. YOUR INDEX. YOUR SEARCH.</div>
+          </div>
+        </div>
+      </section>
+      <section id="view-crawl" class="view" hidden>
+        <div class="workspace-heading">
+          <div>
+            <p class="eyebrow">BUILD YOUR INDEX</p>
+            <h1>Crawl websites</h1>
+            <p>
+              Start with public URLs. Scout follows links on those same
+              hostnames.
+            </p>
+          </div>
+        </div>
+        <form id="crawl-form" class="crawl-form">
+          <label for="seed-urls"
+            >Seed URLs <span>One per line · up to 10</span></label
+          >
+          <textarea
+            id="seed-urls"
+            rows="4"
+            placeholder="https://www.python.org/"
+            required
+          ></textarea>
+          <div class="crawl-options">
+            <label
+              >Page limit<input
+                id="max-pages"
+                type="number"
+                min="1"
+                max="200"
+                value="20"
+                required /></label
+            ><label
+              >Link depth<select id="depth">
+                <option value="0">Seed pages only</option>
+                <option value="1" selected>1 level</option>
+                <option value="2">2 levels</option>
+                <option value="3">3 levels</option>
+              </select></label
+            ><button id="crawl-button" class="primary" type="submit">
+              Start crawl ↗
+            </button>
+          </div>
+          <p class="hint">
+            Respects robots.txt and page indexing preferences. At most one crawl
+            at a time.
+          </p>
+        </form>
+        <div class="result-heading">
+          <span>Crawl history</span
+          ><button id="refresh-jobs" class="quiet">Refresh ↻</button>
+        </div>
+        <div id="jobs" aria-live="polite">
+          <p class="hint">No crawls yet.</p>
+        </div>
+      </section>
+      <section id="view-api" class="view" hidden>
+        <div class="workspace-heading">
+          <div>
+            <p class="eyebrow">CONNECT YOUR TOOLS</p>
+            <h1>API &amp; agents</h1>
+            <p>The same index, ready for your scripts and AI workflows.</p>
+          </div>
+        </div>
+        <div class="api-section">
+          <span class="step">01</span>
+          <div>
+            <h2>Search over HTTP</h2>
+            <p>
+              Send a query and get ranked results, source URLs, and extracted
+              text.
+            </p>
+            <pre id="api-example"></pre>
+            <a class="text-link" href="/docs" target="_blank" rel="noreferrer"
+              >Explore the API reference ↗</a
+            >
+          </div>
+        </div>
+        <div class="api-section">
+          <span class="step">02</span>
+          <div>
+            <h2>Connect an MCP client</h2>
+            <p>
+              Run <code>uv run scout-mcp</code> from this project with the API
+              running. Add the command to your agent’s MCP configuration.
+            </p>
+            <div class="tool-row">
+              <code>search</code><code>get_contents</code
+              ><code>find_similar</code>
+            </div>
+          </div>
+        </div>
+        <div class="api-section">
+          <span class="step">03</span>
+          <div>
+            <h2>Enable local neural search</h2>
+            <p>
+              Install the neural extra, then run
+              <code>uv run scout reindex</code>. Set
+              <code>SCOUT_NEURAL=true</code> and restart. The embedding model
+              runs on your own machine.
+            </p>
+            <p class="hint">
+              Search is limited to your index. This service has no global web
+              index or paid search dependency.
+            </p>
+          </div>
+        </div>
+      </section>
+      <footer>
+        Open Scout <span>Independent search, under your control.</span>
+      </footer>
+    </main>
+    <dialog id="inspector">
+      <div class="dialog-top">
+        <span>SOURCE CONTENT</span
+        ><button id="close-inspector" aria-label="Close source">✕</button>
+      </div>
+      <h2 id="source-title"></h2>
+      <a id="source-url" target="_blank" rel="noreferrer"></a>
+      <p id="source-meta" class="hint"></p>
+      <div class="source-actions">
+        <button id="similar-button" class="primary">
+          Find similar pages ↗</button
+        ><button id="copy-source" class="secondary">Copy text</button>
+      </div>
+      <pre id="source-text"></pre>
+    </dialog>
+    <dialog id="connection">
+      <div class="dialog-top">
+        <span>CONNECTION SETTINGS</span
+        ><button id="close-connection" aria-label="Close settings">✕</button>
+      </div>
+      <h2>Connect to your index</h2>
+      <p>
+        Enter the API key configured for this server. It stays in memory for
+        this tab.
+      </p>
+      <form id="connection-form">
+        <label for="api-key">API key</label
+        ><input id="api-key" type="password" autocomplete="off" /><button
+          class="primary"
+          type="submit"
+        >
+          Connect ↗
+        </button>
+      </form>
+    </dialog>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+services:
+  scout:
+    build:
+      context: .
+      args:
+        SCOUT_EXTRAS: ${SCOUT_EXTRAS:-}
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      SCOUT_API_KEY: ${SCOUT_API_KEY:?Set a random SCOUT_API_KEY of at least 24 characters in .env}
+      SCOUT_NEURAL: ${SCOUT_NEURAL:-false}
+    volumes:
+      - scout-data:/data
+    restart: unless-stopped
+volumes:
+  scout-data:
